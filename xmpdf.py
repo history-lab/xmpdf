@@ -1,7 +1,7 @@
-import pgparse
 import pdftotext
 import magic
 import csv
+from pgparse import parse, Email, Page
 
 NO_FILE_ID_FLAG = -999
 
@@ -27,16 +27,16 @@ class Xmpdf:
         i = 0
         current_email = None
         while i < self.pgcnt:
-            page = pgparse.parse(self.pdf[i])
+            page = parse(self.pdf[i])
             i += 1
-            if isinstance(page, pgparse.Email):
+            if isinstance(page, Email):
                 if current_email:
                     self.emails.append(current_email)
                 current_email = page
                 current_email.pdf_filename = self.filename
                 current_email.page_number = i
                 current_email.page_count = 1
-            elif (isinstance(page, pgparse.Page) and current_email):
+            elif (isinstance(page, Page) and current_email):
                 current_email.body += page.body
                 current_email.page_count += 1
         if current_email:   # write last email
