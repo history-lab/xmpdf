@@ -1,6 +1,7 @@
 import pdftotext
 import magic
 import csv
+import jsonpickle
 from pgparse import parse, Email, Page
 
 NO_FILE_ID_FLAG = -999
@@ -59,7 +60,10 @@ class Xmpdf:
         return f'{file_id_str}{self.filename}: {self.filetype}; ' \
                f'{self.pgcnt} pages, {len(self.emails)} emails {error_str}'
 
-    def write_csv(self, csv_file):
+    def to_json(self):
+        return jsonpickle.encode(self, unpicklable=False, indent=4)
+
+    def to_csv(self, csv_file):
         email_fields = ['page number', 'page count', 'subject', 'date', 'from',
                         'to', 'cc', 'bcc', 'attachments', 'importance', 'url',
                         'body', 'hdr begin', 'hdr end', 'unprocessed']
