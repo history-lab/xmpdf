@@ -7,4 +7,5 @@ a PDF file",
       author="Ben Lis",
       url="https://github.com/history-lab/xmpdf",
       license="Apache License",
-      py_modules=["xmpdf"])
+      install_requires=["pdftotext", "python-magic"],
+      py_modules=["pgparse", "xmpdf"])
