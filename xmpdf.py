@@ -45,7 +45,7 @@ class Xmpdf:
 
     def __pdf2txt(self):
         with open(self.filename, 'rb') as f:
-            self.pdf = pdftotext.PDF(f)
+            self.pdf = pdftotext.PDF(f, physical=True)
             self.pgcnt = len(self.pdf)
 
     def get_summary(self):
