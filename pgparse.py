@@ -120,22 +120,25 @@ class HeaderParser:
             return True
 
     def _convert_obj(self):
-        """Create a PDFEmailHeader object based on the contents of the
+        """Create a Header object based on the contents of the
         self._header dictionary. If required fields are missing, it raises
         warnings and returns None."""
         if not self._header['date']:
             self._header['date'] = self._header.get('sent')
-        return Header(from_email=self._header.get('from'),
-                      to=self._header.get('to'),
-                      cc=self._header.get('cc'),
-                      bcc=self._header.get('bcc'),
-                      subject=self._header.get('subject'),
-                      date=self._header.get('date'),
-                      attachments=self._header.get('attachments'),
-                      importance=self._header.get('importance'),
-                      begin_ln=self._header.get('begin_ln'),
-                      end_ln=self._header.get('end_ln'),
-                      unprocessed=self._header.get('unprocessed'))
+        if self._header['date'] and self._header['from']:
+            return Header(from_email=self._header.get('from'),
+                          to=self._header.get('to'),
+                          cc=self._header.get('cc'),
+                          bcc=self._header.get('bcc'),
+                          subject=self._header.get('subject'),
+                          date=self._header.get('date'),
+                          attachments=self._header.get('attachments'),
+                          importance=self._header.get('importance'),
+                          begin_ln=self._header.get('begin_ln'),
+                          end_ln=self._header.get('end_ln'),
+                          unprocessed=self._header.get('unprocessed'))
+        else:  # No date: or from:, v likely a false positive header
+            return None
 
     def parse(self):
         self._lncnt = len(self.pgarr)         # lines in page
