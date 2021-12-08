@@ -47,7 +47,7 @@ class Email(Page):
                 self.header.begin_ln, self.header.end_ln,
                 self.header.unprocessed]
 
-    def get_summary(self):
+    def info(self):
         summary = f'{self.page_number}, {self.page_count}; ' \
                   f'{self.header.subject}; {self.header.date}; ' \
                   f'{self.header.from_email}; {self.header.to}'
