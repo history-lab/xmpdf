@@ -48,7 +48,8 @@ class Xmpdf:
             self.pdf = pdftotext.PDF(f, physical=True)
             self.pgcnt = len(self.pdf)
 
-    def get_summary(self):
+    def info(self):
+        """Returns high-level descriptive information about the xmpdf file"""
         if self.file_id == NO_FILE_ID_FLAG:
             file_id_str = ''
         else:
@@ -61,9 +62,11 @@ class Xmpdf:
                f'{self.pgcnt} pages, {len(self.emails)} emails {error_str}'
 
     def to_json(self):
+        """Jsonified representation of Xmpdf object"""
         return jsonpickle.encode(self, unpicklable=False, indent=4)
 
     def to_csv(self, csv_file):
+        """CSV representation of Xmpdf object"""
         if self.emails:
             csv_writer = csv.writer(csv_file, delimiter=',', quotechar='"',
                                     quoting=csv.QUOTE_MINIMAL)
