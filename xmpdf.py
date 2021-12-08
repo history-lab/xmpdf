@@ -64,13 +64,10 @@ class Xmpdf:
         return jsonpickle.encode(self, unpicklable=False, indent=4)
 
     def to_csv(self, csv_file):
-        email_fields = ['page number', 'page count', 'subject', 'date', 'from',
-                        'to', 'cc', 'bcc', 'attachments', 'importance', 'url',
-                        'body', 'hdr begin', 'hdr end', 'unprocessed']
         if self.emails:
             csv_writer = csv.writer(csv_file, delimiter=',', quotechar='"',
                                     quoting=csv.QUOTE_MINIMAL)
 
-            csv_writer.writerow(email_fields)
+            csv_writer.writerow(self.emails[0].csv_header)
             for e in self.emails:
                 csv_writer.writerow(e.flatten())
