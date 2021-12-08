@@ -1,7 +1,7 @@
 from setuptools import setup
 
 setup(name="xmpdf",
-      version="0.2",
+      version="0.3",
       description="A Python package for extracting email metadata and text from \
 a PDF file",
       author="Ben Lis",
