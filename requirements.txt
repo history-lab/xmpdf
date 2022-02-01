@@ -2,3 +2,4 @@ build==0.7.0
 jsonpickle==2.0.0
 pdftotext==2.2.2
 python-magic==0.4.24
+twine==3.7.1
