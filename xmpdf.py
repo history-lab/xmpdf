@@ -1,3 +1,4 @@
+"""xmpdf.py: Xmpdf class definition."""
 import pdftotext
 import magic
 import csv
@@ -8,8 +9,44 @@ NO_FILE_ID_FLAG = -999
 
 
 class Xmpdf:
+    """
+    A class that parses the emails in a PDF.
+
+    ...
+    Attributes
+    ----------
+    filename : str
+        the name of the PDF file containing emails
+    file_id : str
+        optional file_id associated with file; useful for collections
+        processing
+    filetype : str
+        PDF version information
+    pgcnt : int
+        number of pages in file_id
+    emails : list
+        email objects
+    error : str
+        errors encountered during processing
+
+    Methods
+    -------
+    info()
+        Returns high-level descriptive information about the PDF file
+    to_json()
+        Returns jsonified representation of Xmpdf object
+    to_csv(csv_filename)
+        Writes a CSV representation of the Xmpdf emails to csv_filename
+    """
 
     def __init__(self, pdf_filename, file_id=NO_FILE_ID_FLAG):
+        """
+        Create Xmpdf object.
+
+        Takes a PDF filename and an optional file_id and creates an Xmpdf
+        instance which holds a parsed representation of the emails in the
+        PDF in a dictionary.
+        """
         self.file_id = file_id
         self.filename = pdf_filename
         self.filetype = None
@@ -49,7 +86,7 @@ class Xmpdf:
             self.pgcnt = len(self.pdf)
 
     def info(self):
-        """Returns high-level descriptive information about the xmpdf file"""
+        """Return high-level descriptive information about the PDF file."""
         if self.file_id == NO_FILE_ID_FLAG:
             file_id_str = ''
         else:
@@ -62,11 +99,11 @@ class Xmpdf:
                f'{self.pgcnt} pages, {len(self.emails)} emails {error_str}'
 
     def to_json(self):
-        """Jsonified representation of Xmpdf object"""
+        """Return jsonified representation of Xmpdf object."""
         return jsonpickle.encode(self, unpicklable=False, indent=4)
 
     def to_csv(self, csv_file):
-        """CSV representation of Xmpdf object"""
+        """Write CSV representation of Xmpdf emails."""
         if self.emails:
             csv_writer = csv.writer(csv_file, delimiter=',', quotechar='"',
                                     quoting=csv.QUOTE_MINIMAL)

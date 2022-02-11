@@ -1,8 +1,10 @@
+"""setup.py: the pacakging definitions."""
 from setuptools import setup
 import os
 
 
 def get_long_description():
+    """Generate the long description from the README.md contents."""
     with open(
         os.path.join(os.path.dirname(__file__), "README.md"),
         encoding="utf8",
