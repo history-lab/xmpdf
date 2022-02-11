@@ -1,3 +1,4 @@
+"""pgparse.py: Classes and function for parsing emails on a PDF page."""
 from dataclasses import dataclass, field
 from typing import ClassVar
 from collections import defaultdict
@@ -5,6 +6,8 @@ from collections import defaultdict
 
 @dataclass
 class Header:
+    """A data class for an email header."""
+
     from_email:     str = None
     to:             list[str] = field(default_factory=list)
     subject:        str = None
@@ -20,11 +23,15 @@ class Header:
 
 @dataclass
 class Page:
+    """A data class for a PDF page without an email header."""
+
     body:           str
 
 
 @dataclass
 class Email(Page):
+    """A data class for an email."""
+
     header:         Header
     pdf_filename:   str = field(default_factory=str)
     page_number:    int = field(default_factory=int)
@@ -39,6 +46,7 @@ class Email(Page):
                 'unprocessed']
 
     def flatten(self):
+        """Return flattened representation of email header."""
         return [self.pdf_filename, self.page_number, self.page_count,
                 self.header.subject, self.header.date,
                 self.header.from_email, self.header.to, self.header.cc,
@@ -48,6 +56,7 @@ class Email(Page):
                 self.header.unprocessed]
 
     def info(self):
+        """Return email header info summary."""
         summary = f'{self.page_number}, {self.page_count}; ' \
                   f'{self.header.subject}; {self.header.date}; ' \
                   f'{self.header.from_email}; {self.header.to}'
@@ -56,6 +65,8 @@ class Email(Page):
 
 @dataclass
 class HeaderParser:
+    """A class that parses an email header on a page, if it exists."""
+
     pgarr:          list[str]
     _FIELD_TOKENS:  ClassVar[list[str]] = ['from', 'to', 'cc', 'bcc',
                                            'subject', 'date', 'sent',
@@ -88,7 +99,7 @@ class HeaderParser:
             self._ln += 1
 
     def _tokenize(self):
-        """Tokenizes a string if it represents an element of an email header"""
+        """Tokenize a string if it represents an email header element."""
         line = self.pgarr[self._ln].strip()
         loc = line.find(':')
         if loc != -1:           # found add to header dictionary
@@ -109,8 +120,8 @@ class HeaderParser:
             self._header[self._token] += line
 
     def _next_line(self):
-        """Returns True if there is another line in the header.
-           False otherwise. Side effect: always increments ln."""
+        """Return True if there is another line in the header else False."""
+        # Side effect: always increments ln."""
         self._ln += 1
         if self._ln >= self._lncnt:                # Reached end of page
             return False
@@ -120,9 +131,10 @@ class HeaderParser:
             return True
 
     def _convert_obj(self):
-        """Create a Header object based on the contents of the
-        self._header dictionary. If required fields are missing, it raises
-        warnings and returns None."""
+        """Create a Header object based on the self._header dictionary.
+
+        If required fields are missing, raise warnings and return None.
+        """
         if not self._header['date']:
             self._header['date'] = self._header.get('sent')
         if self._header['date'] and self._header['from']:
@@ -141,6 +153,7 @@ class HeaderParser:
             return None
 
     def parse(self):
+        """Parse the email header if it exists."""
         self._lncnt = len(self.pgarr)         # lines in page
         if self._find_start():                # find the start of the header
             while True:                       # while in header
@@ -155,8 +168,11 @@ class HeaderParser:
 
 
 def parse(page):
-    """Parses a string representing a PDF page. returns either a Page object or
-    an Email object depending on whether the page has an email header."""
+    """Parse a string representation of a PDF page.
+
+    Returns either a Page or an Email object depending on whether the page has
+    an email header.
+    """
     pgarr = page.splitlines()
     hp = HeaderParser(pgarr)
     header = hp.parse()
@@ -176,6 +192,7 @@ def parse(page):
 
 
 def main():
+    """Run as script for testing purposes."""
     example_page = """
     From:       yogi.bear@cartoon.com
     To:         booboo.bear@cartoon.com
