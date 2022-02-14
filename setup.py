@@ -13,7 +13,8 @@ def get_long_description():
 
 
 setup(name="xmpdf",
-      version="0.4.1",
+      version="0.4.2",
+      python_requires=">=3.8",
       long_description=get_long_description(),
       long_description_content_type="text/markdown",
       description="Extracts email metadata and text from a PDF file",
