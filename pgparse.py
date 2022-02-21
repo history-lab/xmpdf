@@ -33,7 +33,6 @@ class Email(Page):
     """A data class for an email."""
 
     header:         Header
-    pdf_filename:   str = field(default_factory=str)
     page_number:    int = field(default_factory=int)
     page_count:     int = field(default_factory=int)
     csv_header:     ClassVar[list] = [
@@ -47,7 +46,7 @@ class Email(Page):
 
     def flatten(self):
         """Return flattened representation of email header."""
-        return [self.pdf_filename, self.page_number, self.page_count,
+        return [self.page_number, self.page_count,
                 self.header.subject, self.header.date,
                 self.header.from_email, self.header.to, self.header.cc,
                 self.header.bcc, self.header.attachments,
