@@ -1,11 +1,8 @@
 """xmpdf.py: Xmpdf class definition."""
 import pdftotext
-import magic
 import csv
 import jsonpickle
 from pgparse import parse, Email, Page
-
-NO_FILE_ID_FLAG = -999
 
 
 class Xmpdf:
@@ -15,13 +12,8 @@ class Xmpdf:
     ...
     Attributes
     ----------
-    filename : str
-        the name of the PDF file containing emails
-    file_id : str
-        optional file_id associated with file; useful for collections
-        processing
-    filetype : str
-        PDF version information
+    file : obj
+        file or file-like object containing emails
     pgcnt : int
         number of pages in file_id
     emails : list
@@ -39,24 +31,20 @@ class Xmpdf:
         Writes a CSV representation of the Xmpdf emails to csv_filename
     """
 
-    def __init__(self, pdf_filename, file_id=NO_FILE_ID_FLAG):
+    def __init__(self, pdf_file):
         """
         Create Xmpdf object.
 
-        Takes a PDF filename and an optional file_id and creates an Xmpdf
-        instance which holds a parsed representation of the emails in the
-        PDF in a dictionary.
+        Takes a PDF file and creates an Xmpdf instance which holds a parsed
+        representation of the emails in the PDF in a dictionary.
         """
-        self.file_id = file_id
-        self.filename = pdf_filename
-        self.filetype = None
         self.pgcnt = 0
         self.emails = []
         self.error = None
         # convert to text
         try:
-            self.filetype = magic.from_file(self.filename)
-            self.__pdf2txt()
+            self.pdf = pdftotext.PDF(pdf_file, physical=True)
+            self.pgcnt = len(self.pdf)
             self.__parse()
         except Exception as e:
             self.error = str(e)
@@ -71,7 +59,6 @@ class Xmpdf:
                 if current_email:
                     self.emails.append(current_email)
                 current_email = page
-                current_email.pdf_filename = self.filename
                 current_email.page_number = i
                 current_email.page_count = 1
             elif (isinstance(page, Page) and current_email):
@@ -80,23 +67,13 @@ class Xmpdf:
         if current_email:   # write last email
             self.emails.append(current_email)
 
-    def __pdf2txt(self):
-        with open(self.filename, 'rb') as f:
-            self.pdf = pdftotext.PDF(f, physical=True)
-            self.pgcnt = len(self.pdf)
-
     def info(self):
         """Return high-level descriptive information about the PDF file."""
-        if self.file_id == NO_FILE_ID_FLAG:
-            file_id_str = ''
-        else:
-            file_id_str = str(self.file_id) + ') '
         if self.error:
             error_str = ', ' + self.error
         else:
             error_str = ''
-        return f'{file_id_str}{self.filename}: {self.filetype}; ' \
-               f'{self.pgcnt} pages, {len(self.emails)} emails {error_str}'
+        return f'{self.pgcnt} pages, {len(self.emails)} emails {error_str}'
 
     def to_json(self):
         """Return jsonified representation of Xmpdf object."""
@@ -107,7 +84,6 @@ class Xmpdf:
         if self.emails:
             csv_writer = csv.writer(csv_file, delimiter=',', quotechar='"',
                                     quoting=csv.QUOTE_MINIMAL)
-
             csv_writer.writerow(self.emails[0].csv_header)
             for e in self.emails:
                 csv_writer.writerow(e.flatten())
