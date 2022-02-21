@@ -56,7 +56,7 @@ class Email(Page):
 
     def info(self):
         """Return email header info summary."""
-        return {"page_number": self.pagenumber,
+        return {"page_number": self.page_number,
                 "page_count": self.page_count,
                 "subject": self.header.subject,
                 "date": self.header.date,

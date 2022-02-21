@@ -75,6 +75,13 @@ class Xmpdf:
             error_str = ''
         return f'{self.pgcnt} pages, {len(self.emails)} emails {error_str}'
 
+    def email_metadata(self):
+        """Return key metadata elements for each email in the PDF."""
+        em_meta = []
+        for e in self.emails:
+            em_meta.append(e.info())
+        return(em_meta)
+
     def to_json(self):
         """Return jsonified representation of Xmpdf object."""
         return jsonpickle.encode(self, unpicklable=False, indent=4)

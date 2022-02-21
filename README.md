@@ -8,6 +8,7 @@ Extracts email metadata and text body from a PDF containing emails.
 ## Usage
 
     from xmpdf import Xmpdf
+
     ems = Xmpdf(pdf_file)
     # print summary info about emails in PDF file
     print(ems.info())
