@@ -36,7 +36,7 @@ class Email(Page):
     page_number:    int = field(default_factory=int)
     page_count:     int = field(default_factory=int)
     csv_header:     ClassVar[list] = [
-                'pdf file', 'page number', 'page count',
+                'PDF page number', 'page count',
                 'subject', 'date',
                 'from', 'to', 'cc',
                 'bcc', 'attachments',
@@ -56,10 +56,12 @@ class Email(Page):
 
     def info(self):
         """Return email header info summary."""
-        summary = f'{self.page_number}, {self.page_count}; ' \
-                  f'{self.header.subject}; {self.header.date}; ' \
-                  f'{self.header.from_email}; {self.header.to}'
-        return summary
+        return {"page_number": self.pagenumber,
+                "page_count": self.page_count,
+                "subject": self.header.subject,
+                "date": self.header.date,
+                "from_email": self.header.from_email,
+                "to": self.header.to}
 
 
 @dataclass
