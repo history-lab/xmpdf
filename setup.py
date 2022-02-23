@@ -21,5 +21,5 @@ setup(name="xmpdf",
       author="Ben Lis, History Lab @ Columbia University",
       url="https://github.com/history-lab/xmpdf",
       license="MIT License",
-      install_requires=["pdftotext", "python-magic", "jsonpickle"],
+      install_requires=["pdftotext", "jsonpickle"],
       py_modules=["pgparse", "xmpdf"])
