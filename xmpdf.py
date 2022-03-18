@@ -41,6 +41,8 @@ class Xmpdf:
         self.pgcnt = 0
         self.emails = []
         self.error = None
+        self.wcp = []            # word count per page
+        # self.lcp = []          # line count per page
         # convert to text
         try:
             self.pdf = pdftotext.PDF(pdf_file, physical=True)
@@ -53,6 +55,8 @@ class Xmpdf:
         i = 0
         current_email = None
         while i < self.pgcnt:
+            self.wcp.append(len(self.pdf[i].split()))
+            # self.lcp.append(len(self.pdf[i].split('\n')))
             page = parse(self.pdf[i])
             i += 1
             if isinstance(page, Email):
@@ -69,10 +73,11 @@ class Xmpdf:
 
     def info(self):
         """Return high-level descriptive information about the PDF file."""
+        error_str = ''
         if self.error:
             error_str = ', ' + self.error
-        else:
-            error_str = ''
+        if sum(self.wcp) == 0:
+            error_str = ', WARNING: 0 words detected - PDF probably needs OCR'
         return f'{self.pgcnt} pages, {len(self.emails)} emails {error_str}'
 
     def email_metadata(self):
