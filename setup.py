@@ -13,7 +13,7 @@ def get_long_description():
 
 
 setup(name="xmpdf",
-      version="0.6.0",
+      version="0.7.0",
       python_requires=">=3.8",
       long_description=get_long_description(),
       long_description_content_type="text/markdown",

@@ -136,8 +136,6 @@ class HeaderParser:
 
         If required fields are missing, raise warnings and return None.
         """
-        if not self._header['date']:
-            self._header['date'] = self._header.get('sent')
         if self._header['date'] and self._header['from']:
             return Header(from_email=self._header.get('from'),
                           to=self._header.get('to'),
@@ -153,6 +151,22 @@ class HeaderParser:
         else:  # No date: or from:, v likely a false positive header
             return None
 
+    def _gmail_parser(self):
+        from_sent = self.pgarr[self._header['end_ln']-2]
+        fe = from_sent.find('>')
+        # oldsubject - 2021 or earlier; newsubject - 2022 or later
+        old_subject = self.pgarr[self._header['end_ln']-3].strip()
+        new_subject = self.pgarr[self._header['end_ln']-5].strip()
+        if fe > 0 and (old_subject or new_subject):
+            self._header['from'] = from_sent[:fe+1]
+            self._header['date'] = from_sent[fe+1:].strip()
+            if old_subject:
+                self._header['subject'] = old_subject
+                self._header['begin_ln'] = self._header['begin_ln'] - 2
+            else:    # new_subject:
+                self._header['subject'] = new_subject
+                self._header['begin_ln'] = self._header['begin_ln'] - 4
+
     def parse(self):
         """Parse the email header if it exists."""
         self._lncnt = len(self.pgarr)         # lines in page
@@ -162,7 +176,15 @@ class HeaderParser:
                 if not self._next_line():     # end of header
                     break
             self._header['end_ln'] = self._ln
+            if not self._header['date']:
+                self._header['date'] = self._header.get('sent')
+            if not (self._header['subject'] or
+                    self._header['date'] or
+                    self._header['from']):
+                self._gmail_parser()
             header_obj = self._convert_obj()  # convert _header to object
+            # print(f'{header_obj=}')
+            # print(f'{self._header=}')
             return header_obj
         else:                                 # no header
             return None
